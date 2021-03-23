@@ -5,24 +5,14 @@ import {
     StatusBar,
     ImageBackground,
     Platform,
-    Image,
 } from 'react-native';
 import { Spinner } from 'native-base';
 
-import LottieModal from '../components/Modal/LottieModal';
-
-import { Images, Colors, LottieFiles } from '../style';
+import { Images, Colors } from '../style';
 
 export default class AppLoading extends Component {
     constructor(props) {
         super(props);
-
-        this.state = {
-            isModalVisible: false,
-            modalImgSource: LottieFiles.error,
-            modalDescription: '',
-            modalHeight: 280,
-        };
     }
 
     // eslint-disable-next-line no-undef
@@ -43,24 +33,15 @@ export default class AppLoading extends Component {
         }
 
         return (
-            <ImageBackground style={styles.containerBg} source={Images.splash_bg}>
+            <ImageBackground
+                style={styles.containerBg}
+                imageStyle={{
+                    resizeMode: 'stretch'
+                }}
+                source={Images.splash_bg}
+            >
                 <SafeAreaView style={styles.container}>
                     <StatusBar barStyle="light-content" />
-                    <LottieModal
-                        isVisible={this.state.isModalVisible}
-                        description={this.state.modalDescription}
-                        buttonText={'Confirmar'}
-                        lottieFile={this.state.modalImgSource}
-                        onBackAction={() => {
-                            this.setState({
-                                isModalVisible: false,
-                            });
-                        }}
-                        style={{
-                            height: this.state.modalHeight
-                        }}
-                    />
-                    <Image style={styles.logo} source={Images.splash_logo} />
                     <Spinner size={50} color={Colors.mainComponentsLogin} />
                 </SafeAreaView>
             </ImageBackground>

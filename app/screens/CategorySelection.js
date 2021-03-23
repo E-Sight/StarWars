@@ -4,14 +4,13 @@ import {
     View,
     StyleSheet,
     StatusBar,
-    RefreshControl,
 } from 'react-native';
 
 import StackHeader from '../components/Header/StackHeader';
 
 import CardCategory from '../components/Cards/CardCategory';
 
-import { Colors } from '../style';
+import { Colors, Images } from '../style';
 
 export default class CategorySelection extends Component {
     constructor(props) {
@@ -19,18 +18,33 @@ export default class CategorySelection extends Component {
 
         this.state = {
             isRefreshing: false,
+            categoriesData: [
+                {
+                    title: 'Filmes',
+                    imgSource: Images.films,
+                },
+                {
+                    title: 'Pessoas',
+                    imgSource: Images.people,
+                },
+                {
+                    title: 'Planetas',
+                    imgSource: Images.planets,
+                },
+                {
+                    title: 'Espécies',
+                    imgSource: Images.species,
+                },
+                {
+                    title: 'Naves',
+                    imgSource: Images.spaceships,
+                },
+                {
+                    title: 'Veículos',
+                    imgSource: Images.vehicles,
+                },
+            ],
         };
-    }
-
-    componentDidMount() {
-        this.subs = [
-            this.props.navigation.addListener('didFocus',
-                () => {
-                    if (this.props.categoriesData.mustRefresh === true) {
-                        this.refreshCategories();
-                    }
-                }),
-        ];
     }
 
     // eslint-disable-next-line no-undef
@@ -51,26 +65,18 @@ export default class CategorySelection extends Component {
                 />
                 <ScrollView
                     style={styles.container}
-                    contentContainerStyle={{ marginTop: 5, padding: 20, paddingBottom: 115, }}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={this.state.isRefreshing}
-                            onRefresh={this.refreshCategories}
-                            colors={[Colors.mainColor, Colors.mainColor]}
-                        />
-                    }
+                    contentContainerStyle={{ marginTop: 5, padding: 20, paddingBottom: 20, }}
                 >
                     <StatusBar barStyle="dark-content" />
-                    {this.props.categoriesData.categoriesArray
+                    {this.state.categoriesData
                         .sort((a, b) => a.title > b.title)
-                        .map((item) => (<CardCategory
-                            key={item.key}
+                        .map((item, i) => (<CardCategory
+                            key={i}
                             title={item.title}
-                            imgSource={{ uri: item.imgSource }}
+                            imgSource={item.imgSource}
                             onPress={() => {
                                 this.props.navigation.navigate('ProductList',
                                     {
-                                        subcategoriesArray: item.subcategories,
                                         category: item
                                     }
                                 );

@@ -1,5 +1,5 @@
 const colors = {
-    mainColor: '#FF4002',
+    mainColor: '#000',
     mainComponentsLogin: '#006536',
     hyperlink: '#005CFB',
     /* mainBackground: '#DFDFDF', */
