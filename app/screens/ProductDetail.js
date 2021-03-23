@@ -19,6 +19,7 @@ export default class ProductDetail extends Component {
         super(props);
 
         this.state = {
+            category: this.props.navigation.state.params.category,
             product: this.props.navigation.state.params.product,
         };
     }
