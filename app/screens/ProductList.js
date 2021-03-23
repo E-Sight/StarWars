@@ -87,10 +87,12 @@ export default class ProductList extends Component {
     changePage = (next) => {
         if (next) {
             this.setState({
-                page: this.state.page + 1
+                page: this.state.page + 1,
+                isLoading: true,
             }, this.loadPage);
         } else {
             this.setState({
+                isLoading: true,
                 page: this.state.page - 1
             }, this.loadPage);
         }
