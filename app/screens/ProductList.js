@@ -10,12 +10,9 @@ import {
     FlatList
 } from 'react-native';
 
-import ScrollableTabView, {
-    ScrollableTabBar,
-} from 'react-native-scrollable-tab-view';
+import { Spinner } from 'native-base';
 
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import Entypo from 'react-native-vector-icons/Entypo';
 
 import NavigationService from '../navigation/NavigationService';
 
@@ -28,11 +25,65 @@ export default class ProductList extends Component {
         super(props);
 
         this.state = {
-            subcategoriesArray: this.props.navigation.state.params.subcategoriesArray,
-            productsData: this.props.productsData,
+            category: this.props.navigation.state.params.category.title,
+            productsData: [{
+                name: "Luke Skywalker",
+                height: "172",
+                mass: "77",
+                hair_color: "blond",
+                skin_color: "fair",
+                eye_color: "blue",
+                birth_year: "19BBY",
+                gender: "male",
+                homeworld: "http://swapi.dev/api/planets/1/",
+                films: [
+                    "http://swapi.dev/api/films/1/",
+                    "http://swapi.dev/api/films/2/",
+                    "http://swapi.dev/api/films/3/",
+                    "http://swapi.dev/api/films/6/"
+                ],
+                species: [],
+                vehicles: [
+                    "http://swapi.dev/api/vehicles/14/",
+                    "http://swapi.dev/api/vehicles/30/"
+                ],
+                starships: [
+                    "http://swapi.dev/api/starships/12/",
+                    "http://swapi.dev/api/starships/22/"
+                ],
+                created: "2014-12-09T13:50:51.644000Z",
+                edited: "2014-12-20T21:17:56.891000Z",
+                url: "http://swapi.dev/api/people/1/"
+            },
+            {
+                name: 'C-3PO',
+                height: 167,
+                mass: 75,
+                hair_color: "n/a",
+                skin_color: "gold",
+                eye_color: "yellow",
+                birth_year: "112BBY",
+                gender: "n/a",
+                homeworld: "http://swapi.dev/api/planets/1/",
+                films: [
+                    "http://swapi.dev/api/films/1/",
+                    "http://swapi.dev/api/films/2/",
+                    "http://swapi.dev/api/films/3/",
+                    "http://swapi.dev/api/films/4/",
+                    "http://swapi.dev/api/films/5/",
+                    "http://swapi.dev/api/films/6/"
+                ],
+                species: [
+                    "http://swapi.dev/api/species/2/"
+                ],
+                vehicles: [],
+                starships: [],
+                created: "2014-12-10T15:10:51.357000Z",
+                edited: "2014-12-20T21:17:50.309000Z",
+                url: "http://swapi.dev/api/people/2/"
+            },],
             search: '',
-            grid: true,
-            columnCount: 2,
+            isLoading: false,
         };
     }
 
@@ -42,181 +93,55 @@ export default class ProductList extends Component {
     }
 
     // eslint-disable-next-line no-undef
-    productsFlatlist = (category) => (<FlatList
-        key={this.state.columnCount}
+    productsFlatlist = () => (<FlatList
         style={{
-            alignSelf: 'stretch'
+            alignSelf: 'stretch',
+            flex: 1,
         }}
-        numColumns={this.state.columnCount}
-        columnWrapperStyle={this.state.grid ? styles.row : null}
-        data={this.state.productsData.productsArray}
+        data={this.state.productsData}
         contentContainerStyle={{
-            paddingTop: 25,
-            paddingBottom: 15,
-            paddingHorizontal: this.state.grid ? 15 : 20,
+            paddingTop: 20,
+            paddingBottom: 25,
+            paddingHorizontal: 20,
         }}
-        renderItem={({ item }) => {
-            if (this.state.subcategoriesArray) {
-                //Existe subcategorias
-                if (item.category === this.props.navigation.state.params.category.title &&
-                    item.subcategory === category) {
-                    return (<CardProductLarge
-                        cardStyle={[styles.productItem, {
-                            marginHorizontal: this.state.grid ? 5 : 0
-                        }]}
-                        imgSource={{ uri: item.imgSource }}
-                        title={item.title}
-                        favorited={item.favorited}
-                        onPress={() => this.props.navigation.navigate('ProductDetail', {
-                            product: item
-                        })}
-                    />);
-                }
-
-                return null;
-            }
-            if (item.category === category) {
-                return (<CardProductLarge
-                    cardStyle={[styles.productItem, {
-                        marginHorizontal: this.state.grid ? 5 : 0
-                    }]}
-                    imgSource={{ uri: item.imgSource }}
-                    title={item.title}
-                    favorited={item.favorited}
-                    onPress={() => this.props.navigation.navigate('ProductDetail', {
-                        product: item
-                    })}
-                />);
-            }
-
-            return null;
-        }}
+        renderItem={({ item }) => (<CardProductLarge
+            cardStyle={styles.productItem}
+            category={this.state.category}
+            imgSource={{ uri: item.imgSource }}
+            title={item.name}
+            onPress={() => this.props.navigation.navigate('ProductDetail', {
+                product: item
+            })}
+        />)}
         keyExtractor={(item, index) => index.toString()}
     />)
 
     // eslint-disable-next-line no-undef
     categoryTabPage = (item, index) => (
         <View key={index} tabLabel={item.title} style={{ flex: 1 }}>
-            <View style={styles.filterContainer}>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        alignSelf: 'flex-end'
-                    }}
-                >
-                    <TouchableOpacity
-                        onPress={() => this.setState({
-                            grid: true,
-                            columnCount: 2,
-                        })}
-                    >
-                        <Entypo
-                            style={styles.filterIcon}
-                            size={35}
-                            name={'grid'}
-                            color={this.state.grid ? '#2b2b2b' : '#ababab'}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => this.setState({
-                            grid: false,
-                            columnCount: 1,
-                        })}
-                    >
-                        <Entypo
-                            style={styles.filterIcon}
-                            size={35}
-                            name={'list'}
-                            color={this.state.grid ? '#ababab' : '#2b2b3b'}
-                        />
-                    </TouchableOpacity>
-                </View>
-            </View>
+            <View style={styles.filterContainer} />
             <View style={styles.tabContentContainer}>
-                {this.productsFlatlist(item.title)}
+                {
+                    this.state.isLoading ? (<View
+                        style={{
+                            flex: 1,
+                            backgroundColor: Colors.mainBackground,
+                            alignSelf: 'stretch',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <Spinner
+                            size={50}
+                            color={Colors.mainComponentsLogin}
+                        />
+                    </View>) : (this.productsFlatlist(item.title))
+                }
             </View>
         </View>
     )
 
     render() {
-        const category = this.props.navigation.state.params.category;
-
-        if (this.state.subcategoriesArray) {
-            //Existe subcategorias
-            return (
-                <View
-                    style={{
-                        flex: 1,
-                        backgroundColor: Colors.mainColor
-                    }}
-                >
-                    <StatusBar barStyle="dark-content" />
-                    <View style={styles.container}>
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                marginBottom: 10,
-                                marginTop: Platform.OS === 'ios' ? 15 : 0
-                            }}
-                        >
-                            <TouchableOpacity
-                                style={{
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    height: 45,
-                                    marginLeft: 15,
-                                }}
-                                onPress={() => NavigationService.goBack()}
-                            >
-                                <AntDesign
-                                    color={'white'}
-                                    size={35}
-                                    name={'arrowleft'}
-                                />
-                            </TouchableOpacity>
-                            <View style={styles.inputContainer}>
-                                <View style={styles.inputIconContainer}>
-                                    <Image source={Images.searchIcon} style={styles.inputIcon} />
-                                    <View style={styles.inputDivisor} />
-                                </View>
-                                <TextInput
-                                    placeholder={'Pesquisar'}
-                                    style={styles.input}
-                                    returnKeyType='search'
-                                    value={this.state.search}
-                                    onChangeText={(text) => this.setState({
-                                        search: text
-                                    })}
-                                />
-                            </View>
-                        </View>
-                    </View>
-                    <ScrollableTabView
-                        tabBarUnderlineStyle={styles.tabUnderLine}
-                        tabBarActiveTextColor={'white'}
-                        tabBarInactiveTextColor={'#c7ebde'}
-                        tabBarTextStyle={styles.tabText}
-                        style={{
-                            backgroundColor: 'transparent',
-                        }}
-                        renderTabBar={() => <ScrollableTabBar />}
-                    >
-                        {
-                            this.state.subcategoriesArray.map((item, index) => (
-                                this.categoryTabPage({
-                                    title: item,
-                                },
-                                    index)
-                            ))
-                        }
-                    </ScrollableTabView>
-                </View>
-            );
-        }
-
-        //Não há subcategorias
         return (
             <View
                 style={{
@@ -274,7 +199,7 @@ export default class ProductList extends Component {
                     }}
                 >
                     {
-                        this.categoryTabPage(category, 0)
+                        this.categoryTabPage(this.state.category, 0)
                     }
                 </View>
             </View>
@@ -362,38 +287,15 @@ const styles = StyleSheet.create({
         alignSelf: 'stretch',
         backgroundColor: Colors.mainBackground
     },
-    cardService: {
+    productItem: {
         backgroundColor: 'white',
-        marginHorizontal: 20,
         shadowOffset: Platform.OS === 'ios' ?
             { width: 2, height: 2 }
             : { width: 3, height: 3 },
         shadowOpacity: Platform.OS === 'ios' ? 0.3 : 0.8,
-        shadowRadius: 2.0,
-        elevation: Platform.OS === 'ios' ? 2 : 4,
+        shadowRadius: 15.0,
+        elevation: Platform.OS === 'ios' ? 7.5 : 15,
         shadowColor: 'rgba(0,0,0,0.9)',
         marginTop: 15,
     },
-    refreshButton: {
-        height: 55,
-        width: 200,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: Colors.mainButton,
-        borderRadius: 50,
-        marginTop: 30,
-    },
-    refreshButtonText: {
-        fontSize: 18,
-        fontFamily: Fonts.sfuiDisplayMedium,
-        color: 'white'
-    },
-    productItem: {
-        flex: 1,
-        marginBottom: 20
-    },
-    row: {
-        flex: 1,
-        justifyContent: 'space-around'
-    }
 });

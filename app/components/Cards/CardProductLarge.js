@@ -5,53 +5,88 @@ import {
     View,
     StyleSheet,
     TouchableOpacity,
-    Platform,
-    Image,
-    ImageBackground
+    Image
 } from 'react-native';
 
-import { Fonts, Metrics, Images } from '../../style';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const { HEIGHT } = Metrics;
+import { Colors, Fonts } from '../../style';
 
 export default class CardProductLarge extends Component {
+    // eslint-disable-next-line no-undef
+    categoryIcon = (category) => {
+        switch (category) {
+            case 'Espécies':
+                return (<MaterialCommunityIcons
+                    size={52}
+                    name={'dna'}
+                    color={Colors.mainColor}
+                />);
+            case 'Filmes':
+                return (<MaterialIcons
+                    size={52}
+                    name={'local-movies'}
+                    color={Colors.mainColor}
+                />);
+            case 'Naves':
+                return (<FontAwesome
+                    size={48}
+                    name={'space-shuttle'}
+                    color={Colors.mainColor}
+                />);
+            case 'Pessoas':
+                return (<MaterialIcons
+                    size={52}
+                    name={'person'}
+                    color={Colors.mainColor}
+                />);
+            case 'Planetas':
+                return (<Ionicons
+                    size={52}
+                    name={'planet'}
+                    color={Colors.mainColor}
+                />);
+            case 'Veículos':
+                return (<MaterialCommunityIcons
+                    size={52}
+                    name={'motorbike'}
+                    color={Colors.mainColor}
+                />);
+            default:
+                return null;
+        }
+    }
+
     render() {
         const {
             cardStyle,
-            imgSource,
             title,
-            favorited,
+            category,
             onPress,
-            favoriteOnPress,
         } = this.props;
         return (
             <TouchableOpacity onPress={onPress} style={[styles.content, cardStyle]}>
-                <ImageBackground
-                    source={imgSource}
-                    style={styles.img}
-                    resizeMode={'cover'}
-                    imageStyle={{
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
+                <View
+                    style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center'
                     }}
                 >
-                    <TouchableOpacity
-                        onPress={favoriteOnPress}
-                    >
-                        <Image
-                            style={styles.imgLike}
-                            source={favorited ?
-                                (Images.favorites_active) : (Images.favorites_inactive)}
-                        />
-                    </TouchableOpacity>
-                </ImageBackground>
-                <View
-                    style={styles.titleView}
-                >
-                    <Text
-                        style={styles.title}
-                        numberOfLines={2}
-                    >{title}</Text>
+                    <View style={styles.iconContainer}>
+                        {
+                            this.categoryIcon(category)
+                        }
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <Text
+                            numberOfLines={1}
+                            style={styles.title}
+                        >{title}</Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         );
@@ -60,38 +95,27 @@ export default class CardProductLarge extends Component {
 
 const styles = StyleSheet.create({
     content: {
+        alignSelf: 'stretch',
+        height: 90,
+        borderRadius: 20,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    iconContainer: {
+        borderRadius: 50,
+        height: 60,
+        width: 60,
         backgroundColor: 'white',
-        alignSelf: 'stretch',
-        height: HEIGHT * 38 <= 260 ? HEIGHT * 38 : 260,
-        borderRadius: 12,
-        shadowOffset: Platform.OS === 'ios' ?
-            { width: 2, height: 2 }
-            : { width: 3, height: 3 },
-        shadowOpacity: Platform.OS === 'ios' ? 0.3 : 0.8,
-        shadowRadius: 15.0,
-        elevation: Platform.OS === 'ios' ? 7.5 : 15,
-        shadowColor: 'rgba(0,0,0,0.9)',
-        marginBottom: 15,
-    },
-    img: {
-        height: 190,
-        alignSelf: 'stretch',
-        alignItems: 'flex-end',
-        padding: 10,
-    },
-    imgLike: {
-        height: 45,
-        width: 45
-    },
-    titleView: {
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        justifyContent: 'space-around',
-        flex: 1
+        marginRight: 15,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     title: {
-        fontFamily: Fonts.sfuiDisplayMedium,
-        fontSize: 18,
-        marginTop: 3
+        /* width: '75%', */
+        color: Colors.mainColor,
+        fontFamily: Fonts.sfuiDisplaySemibold,
+        fontSize: 22
     },
 });
