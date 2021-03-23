@@ -1,6 +1,6 @@
 # Projeto StarWars
 
-## Instructions para Android
+## Instruções para Android
 
 - Execute os seguintes comandos no terminal dentro da pasta do projeto:
 - > npm i
