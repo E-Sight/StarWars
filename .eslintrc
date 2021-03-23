@@ -1,0 +1,9 @@
+{
+    "extends": "rallycoding",
+    "globals": {
+        "space-in-brackets": true
+    },
+    "rules": {
+        "react/require-extension": "off"
+    }
+}
