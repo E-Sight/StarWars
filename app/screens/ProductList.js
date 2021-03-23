@@ -6,16 +6,18 @@ import {
     TouchableOpacity,
     Image,
     TextInput,
+    Text,
     Platform,
     FlatList
 } from 'react-native';
 
-import { Spinner } from 'native-base';
+import axios from 'axios';
 
+import { Spinner } from 'native-base';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 
 import NavigationService from '../navigation/NavigationService';
-
 import CardProductLarge from '../components/Cards/CardProductLarge';
 
 import { Colors, Images, Fonts } from '../style';
@@ -26,65 +28,72 @@ export default class ProductList extends Component {
 
         this.state = {
             category: this.props.navigation.state.params.category.title,
-            productsData: [{
-                name: "Luke Skywalker",
-                height: "172",
-                mass: "77",
-                hair_color: "blond",
-                skin_color: "fair",
-                eye_color: "blue",
-                birth_year: "19BBY",
-                gender: "male",
-                homeworld: "http://swapi.dev/api/planets/1/",
-                films: [
-                    "http://swapi.dev/api/films/1/",
-                    "http://swapi.dev/api/films/2/",
-                    "http://swapi.dev/api/films/3/",
-                    "http://swapi.dev/api/films/6/"
-                ],
-                species: [],
-                vehicles: [
-                    "http://swapi.dev/api/vehicles/14/",
-                    "http://swapi.dev/api/vehicles/30/"
-                ],
-                starships: [
-                    "http://swapi.dev/api/starships/12/",
-                    "http://swapi.dev/api/starships/22/"
-                ],
-                created: "2014-12-09T13:50:51.644000Z",
-                edited: "2014-12-20T21:17:56.891000Z",
-                url: "http://swapi.dev/api/people/1/"
-            },
-            {
-                name: 'C-3PO',
-                height: 167,
-                mass: 75,
-                hair_color: "n/a",
-                skin_color: "gold",
-                eye_color: "yellow",
-                birth_year: "112BBY",
-                gender: "n/a",
-                homeworld: "http://swapi.dev/api/planets/1/",
-                films: [
-                    "http://swapi.dev/api/films/1/",
-                    "http://swapi.dev/api/films/2/",
-                    "http://swapi.dev/api/films/3/",
-                    "http://swapi.dev/api/films/4/",
-                    "http://swapi.dev/api/films/5/",
-                    "http://swapi.dev/api/films/6/"
-                ],
-                species: [
-                    "http://swapi.dev/api/species/2/"
-                ],
-                vehicles: [],
-                starships: [],
-                created: "2014-12-10T15:10:51.357000Z",
-                edited: "2014-12-20T21:17:50.309000Z",
-                url: "http://swapi.dev/api/people/2/"
-            },],
+            productsData: [],
             search: '',
-            isLoading: false,
+            isLoading: true,
+            categoryUri: '',
+            page: 1,
+            havePrevious: false,
+            haveNext: false,
         };
+    }
+
+    componentDidMount() {
+        this.loadPage();
+    }
+
+    loadPage = () => {
+        let apiURI = '';
+        switch (this.state.category) {
+            case 'Espécies':
+                apiURI = `https://swapi.dev/api/species/?page=${this.state.page}`;
+                break;
+            case 'Filmes':
+                apiURI = `https://swapi.dev/api/films/?page=${this.state.page}`;
+                break;
+            case 'Naves':
+                apiURI = `https://swapi.dev/api/starships/?page=${this.state.page}`;
+                break;
+            case 'Pessoas':
+                apiURI = `https://swapi.dev/api/people/?page=${this.state.page}`;
+                break;
+            case 'Planetas':
+                apiURI = `https://swapi.dev/api/planets/?page=${this.state.page}`;
+                break;
+            case 'Veículos':
+                apiURI = `https://swapi.dev/api/vehicles/?page=${this.state.page}`;
+                break;
+            default:
+                break;
+        }
+
+        axios.get(apiURI)
+            .then((response) => {
+                // handle success
+                this.setState({
+                    productsData: response.data.results,
+                    categoryUri: apiURI,
+                    haveNext: response.data.next ? true : false,
+                    havePrevious: response.data.previous ? true : false,
+                    isLoading: false,
+                });
+            })
+            .catch(function (error) {
+                // handle error
+                console.warn(error);
+            })
+    }
+
+    changePage = (next) => {
+        if (next) {
+            this.setState({
+                page: this.state.page + 1
+            }, this.loadPage);
+        } else {
+            this.setState({
+                page: this.state.page - 1
+            }, this.loadPage);
+        }
     }
 
     // eslint-disable-next-line no-undef
@@ -100,16 +109,17 @@ export default class ProductList extends Component {
         }}
         data={this.state.productsData}
         contentContainerStyle={{
-            paddingTop: 20,
-            paddingBottom: 25,
+            paddingTop: 15,
+            paddingBottom: 30,
             paddingHorizontal: 20,
         }}
         renderItem={({ item }) => (<CardProductLarge
             cardStyle={styles.productItem}
             category={this.state.category}
             imgSource={{ uri: item.imgSource }}
-            title={item.name}
+            title={this.state.category === 'Filmes' ? item.title : item.name}
             onPress={() => this.props.navigation.navigate('ProductDetail', {
+                category: this.state.category,
                 product: item
             })}
         />)}
@@ -119,7 +129,38 @@ export default class ProductList extends Component {
     // eslint-disable-next-line no-undef
     categoryTabPage = (item, index) => (
         <View key={index} tabLabel={item.title} style={{ flex: 1 }}>
-            <View style={styles.filterContainer} />
+            <View style={styles.filterContainer}>
+                {
+                    this.state.havePrevious ? (<TouchableOpacity
+                        style={styles.paginationButton}
+                        onPress={() => this.changePage(false)}
+                    >
+                        <SimpleLineIcons
+                            color={Colors.hyperlink}
+                            size={20}
+                            name={'arrow-left'}
+                        />
+                        <Text
+                            style={styles.paginationLabel}
+                        >Anterior</Text>
+                    </TouchableOpacity>) : (<View />)
+                }
+                {
+                    this.state.haveNext ? (<TouchableOpacity
+                        style={styles.paginationButton}
+                        onPress={() => this.changePage(true)}
+                    >
+                        <Text
+                            style={styles.paginationLabel}
+                        >Próximo</Text>
+                        <SimpleLineIcons
+                            color={Colors.hyperlink}
+                            size={20}
+                            name={'arrow-right'}
+                        />
+                    </TouchableOpacity>) : (<View />)
+                }
+            </View>
             <View style={styles.tabContentContainer}>
                 {
                     this.state.isLoading ? (<View
@@ -254,7 +295,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#EBEBEB',
         height: 60,
         alignSelf: 'stretch',
-        justifyContent: 'center',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         paddingHorizontal: 25,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: Platform.OS === 'ios' ? 0.6 : 0.8,
@@ -262,28 +305,20 @@ const styles = StyleSheet.create({
         elevation: Platform.OS === 'ios' ? 2 : 3,
         shadowColor: 'rgba(0,0,0,0.9)',
     },
-    filterIcon: {
-        height: 35,
-        width: 35,
-        marginLeft: 10,
+    paginationButton: {
+        flexDirection: 'row',
     },
-    tabUnderLine: {
-        backgroundColor: 'white',
-        height: 2
-    },
-    tabText: {
-        fontFamily: Fonts.sfuiDisplayMedium,
+    paginationLabel: {
+        marginHorizontal: 5,
         fontSize: 16,
+        color: Colors.hyperlink,
+        textDecorationLine: 'underline',
+        fontFamily: Fonts.sfuiDisplaySemibold,
     },
     //Tab Content Related
     tabContentContainer: {
         flex: 1,
         alignItems: 'center',
-        alignSelf: 'stretch',
-        backgroundColor: Colors.mainBackground
-    },
-    servicesFlatList: {
-        flex: 1,
         alignSelf: 'stretch',
         backgroundColor: Colors.mainBackground
     },
