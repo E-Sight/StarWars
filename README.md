@@ -3,9 +3,9 @@
 ## Instructions para Android
 
 - Execute os seguintes comandos no terminal dentro da pasta do projeto:
-> npm i
-> react-native link
-> react-native run-android
+- > npm i
+- > react-native link
+- > react-native run-android
 
 ### Troubleshooting Android
 
@@ -22,10 +22,10 @@
 		# header note.
 		sdk.dir=LOCALIZAÇÃO_DO_SDK
 - Execute o comando no terminal, ainda dentro da pasta android:
-> gradlew clean
+- > gradlew clean
 
 ### iOS
-
+- Execute os seguintes comando no terminal, dentro da pasta do projeto:
 - > cd ios
 - > pod install
 - > pod update
