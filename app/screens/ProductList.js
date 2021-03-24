@@ -46,28 +46,28 @@ export default class ProductList extends Component {
         let apiURI = '';
         switch (this.state.category) {
             case 'Espécies':
-                apiURI = `https://swapi.dev/api/species/?page=${this.state.page}`;
+                apiURI = 'https://swapi.dev/api/species/';
                 break;
             case 'Filmes':
-                apiURI = `https://swapi.dev/api/films/?page=${this.state.page}`;
+                apiURI = 'https://swapi.dev/api/films/';
                 break;
             case 'Naves':
-                apiURI = `https://swapi.dev/api/starships/?page=${this.state.page}`;
+                apiURI = 'https://swapi.dev/api/starships/';
                 break;
             case 'Pessoas':
-                apiURI = `https://swapi.dev/api/people/?page=${this.state.page}`;
+                apiURI = 'https://swapi.dev/api/people/';
                 break;
             case 'Planetas':
-                apiURI = `https://swapi.dev/api/planets/?page=${this.state.page}`;
+                apiURI = 'https://swapi.dev/api/planets/';
                 break;
             case 'Veículos':
-                apiURI = `https://swapi.dev/api/vehicles/?page=${this.state.page}`;
+                apiURI = 'https://swapi.dev/api/vehicles/';
                 break;
             default:
                 break;
         }
 
-        axios.get(apiURI)
+        axios.get(apiURI + `?page=${this.state.page}`)
             .then((response) => {
                 // handle success
                 this.setState({
@@ -82,6 +82,32 @@ export default class ProductList extends Component {
                 // handle error
                 console.warn(error);
             })
+    }
+
+    search = () => {
+        const {
+            search,
+            categoryUri,
+        } = this.state;
+
+        if (search) {
+            axios.get(categoryUri + `?search=${search}`)
+                .then((response) => {
+                    // handle success
+                    this.setState({
+                        productsData: response.data.results,
+                        haveNext: false,
+                        havePrevious: false,
+                        isLoading: false,
+                    });
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.warn(error);
+                })
+        } else {
+            this.loadPage();
+        }
     }
 
     changePage = (next) => {
@@ -230,6 +256,7 @@ export default class ProductList extends Component {
                                 onChangeText={(text) => this.setState({
                                     search: text
                                 })}
+                                onSubmitEditing={() => this.search()}
                             />
                         </View>
                     </View>
