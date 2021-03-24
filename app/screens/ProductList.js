@@ -115,10 +115,14 @@ export default class ProductList extends Component {
             this.setState({
                 page: this.state.page + 1,
                 isLoading: true,
+                haveNext: false,
+                havePrevious: false,
             }, this.loadPage);
         } else {
             this.setState({
                 isLoading: true,
+                haveNext: false,
+                havePrevious: false,
                 page: this.state.page - 1
             }, this.loadPage);
         }
